@@ -40,7 +40,7 @@ class CharacterCreator(ShowBase):
                     range=(0,1), value=0, pageSize=0.2, 
                     command=self.set_shapekey_slider, extraArgs=[joint.name]
                 )
-                y_pos = 4-(j/20)
+                y_pos = 3.5-(j/20)
                 slider = self.sliders[joint.name]
                 slider.set_scale(0.25)
                 slider.set_x(-1.5)
