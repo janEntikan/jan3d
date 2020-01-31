@@ -1,0 +1,3 @@
+panda3d
+panda3d-blend2bam
+panda3d-simplepbr

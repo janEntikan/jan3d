@@ -14,7 +14,7 @@ from panda3d.core import MouseButton
 from panda3d.core import TextNode
 
 
-class MyApp(ShowBase):
+class CharacterCreator(ShowBase):
     def __init__(self):
         ShowBase.__init__(self) 
         base.win.set_clear_color((0,0,0,0))
@@ -29,7 +29,7 @@ class MyApp(ShowBase):
 
         self.jan = Actor("jan.bam")
         self.jan_char = self.jan.find('**/+Character').node()  
-        self.jan.loop("walk_forward")
+        self.jan.loop("idle")
         self.jan.reparent_to(render)
 
         self.sliders = {}
@@ -53,7 +53,7 @@ class MyApp(ShowBase):
         sun.set_color((1,0.8,0.8,1))
         sun_np = render.attachNewNode(sun)
         render.set_light(sun_np)
-        sun_np.set_h(180)
+        sun_np.set_h(185)
         sun_np.set_p(-50)
 
         moon = DirectionalLight("moon")
@@ -101,5 +101,5 @@ class MyApp(ShowBase):
         return task.cont
 
 
-app = MyApp()
+app = CharacterCreator()
 app.run()
