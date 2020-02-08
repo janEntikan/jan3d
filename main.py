@@ -33,6 +33,7 @@ class CharacterCreator(ShowBase):
         self.jan.reparent_to(render)
 
         self.sliders = {}
+        y_pos = 0.9
         for j, joint in enumerate(self.jan.getJoints()):
             if type(joint) == CharacterSlider:
                 self.set_shapekey(joint.name, 0)
@@ -40,7 +41,7 @@ class CharacterCreator(ShowBase):
                     range=(0,1), value=0, pageSize=0.2, 
                     command=self.set_shapekey_slider, extraArgs=[joint.name]
                 )
-                y_pos = 3.5-(j/20)
+                y_pos -= 0.05
                 slider = self.sliders[joint.name]
                 slider.set_scale(0.25)
                 slider.set_x(-1.5)
