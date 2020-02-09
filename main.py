@@ -9,10 +9,11 @@ from panda3d.core import WindowProperties
 from panda3d.core import NodePath
 from panda3d.core import TextureStage
 from panda3d.core import CharacterSlider
-from panda3d.core import DirectionalLight, AmbientLight
+from panda3d.core import DirectionalLight, AmbientLight, PointLight
 from panda3d.core import MouseButton
 from panda3d.core import TextNode
 
+from speech import Speech
 
 class CharacterCreator(ShowBase):
     def __init__(self):
@@ -70,6 +71,14 @@ class CharacterCreator(ShowBase):
         self.accept("wheel_up", self.zoom_in)
         self.accept("wheel_down", self.zoom_out)
         self.taskMgr.add(self.update)
+
+        self.speech = Speech(loader.loadSfx("toki-mije-a.wav"))
+        self.speech.say("to ki")
+        self.speech.say("mi to ki po na")
+        self.speech.say("mi pi li ni")
+        self.speech.say("mi ta wa si na")
+        self.taskMgr.add(self.speech.update)
+
 
     def set_shapekey_slider(self, shapekey):
         self.set_shapekey(shapekey, self.sliders[shapekey]['value'])
