@@ -72,11 +72,11 @@ class CharacterCreator(ShowBase):
         self.accept("wheel_down", self.zoom_out)
         self.taskMgr.add(self.update)
 
+        #self.speech = Speech(loader.loadSfx("toki-meli-a.wav"))
         self.speech = Speech(loader.loadSfx("toki-mije-a.wav"))
         self.speech.say("to ki")
         self.speech.say("mi to ki po na")
-        self.speech.say("mi pi li ni")
-        self.speech.say("mi ta wa si na")
+        self.speech.say("mi o li n si na")
         self.taskMgr.add(self.speech.update)
 
 

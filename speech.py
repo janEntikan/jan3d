@@ -2,8 +2,14 @@ from random import uniform
 
 consonants = "mnptkswlj"
 vowels = "iueoa"
-SYLLABLES = {"":0}
-i = 0
+SYLLABLES = {
+    "":0,
+    "n":0,
+        }
+i = 1
+for vowel in vowels:
+    SYLLABLES[vowel] = i
+    i += 1
 for consonant in consonants:
     for vowel in vowels:
         SYLLABLES[consonant+vowel] = i
@@ -23,8 +29,8 @@ class Speech:
         for word in words:
             syllables = [word] # TODO: split the word in syllables
             for syllable in syllables:
-                length = uniform(0.2, 0.4)
-                pitch = uniform(0.8, 1.6)
+                length = uniform(0.3, 0.4)
+                pitch = uniform(0.9, 1.6)
                 self.talking.append((syllable, length, pitch))
         self.talking.append(("", 1, 1)) # add a pause after word
         self.play()
@@ -35,6 +41,8 @@ class Speech:
             self.voice.play()
         else:
             self.voice.setPlayRate(0)
+        self.voice.setVolume(0) # set volume to zero to battle pop
+
 
     def update(self, task):
         if len(self.talking) > 0:
