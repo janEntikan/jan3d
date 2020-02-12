@@ -33,6 +33,9 @@ class CharacterCreator(ShowBase):
         self.jan.loop("idle")
         self.jan.reparent_to(render)
 
+        self.palisa = Actor("acc/palisa-mije.bam")
+        self.palisa.reparent_to(self.jan)
+
         self.sliders = {}
         y_pos = 0.9
         for j, joint in enumerate(self.jan.getJoints()):
@@ -72,13 +75,15 @@ class CharacterCreator(ShowBase):
         self.accept("wheel_down", self.zoom_out)
         self.taskMgr.add(self.update)
 
-        #self.speech = Speech(loader.loadSfx("toki-meli-a.wav"))
         self.speech = Speech(loader.loadSfx("toki-mije-a.wav"))
+        #self.speech = Speech(loader.loadSfx("toki-meli-a.wav"))
         self.speech.say("to ki")
         self.speech.say("mi to ki po na")
         self.speech.say("mi o li n si na")
         self.taskMgr.add(self.speech.update)
 
+        render.ls()
+        render.analyze()
 
     def set_shapekey_slider(self, shapekey):
         self.set_shapekey(shapekey, self.sliders[shapekey]['value'])
