@@ -37,22 +37,9 @@ class CharacterCreator(ShowBase):
         self.palisa.reparent_to(self.jan)
 
         self.sliders = {}
-        y_pos = 0.9
-        for j, joint in enumerate(self.jan.getJoints()):
-            if type(joint) == CharacterSlider:
-                self.set_shapekey(joint.name, 0)
-                self.sliders[joint.name] = DirectSlider(
-                    range=(0,1), value=0, pageSize=0.2, 
-                    command=self.set_shapekey_slider, extraArgs=[joint.name]
-                )
-                y_pos -= 0.05
-                slider = self.sliders[joint.name]
-                slider.set_scale(0.25)
-                slider.set_x(-1.5)
-                slider.set_z(y_pos)
-                slider_label = OnscreenText(
-                    joint.name, pos=(-1.25, y_pos, 0), scale=0.04,
-                    fg=(1,1,1,1), align=TextNode.ALeft)
+        self.y_pos = 0.9
+        self.make_sliders(self.jan)
+        self.make_sliders(self.palisa)
 
         sun = DirectionalLight("sun")
         sun.set_color((1,0.8,0.8,1))
@@ -85,11 +72,12 @@ class CharacterCreator(ShowBase):
         render.ls()
         render.analyze()
 
-    def set_shapekey_slider(self, shapekey):
-        self.set_shapekey(shapekey, self.sliders[shapekey]['value'])
+    def set_shapekey_slider(self, node, shapekey):
+        self.set_shapekey(node, shapekey, self.sliders[shapekey]['value'])
 
-    def set_shapekey(self, shapekey, value):
-        self.jan_char.get_bundle(0).freeze_joint(shapekey, value)
+    def set_shapekey(self, node, shapekey, value):
+        char = node.find('**/+Character').node()
+        char.get_bundle(0).freeze_joint(shapekey, value)
 
     def zoom_out(self):
         new_zoom = base.cam.get_y()-self.zoom_speed
@@ -114,6 +102,25 @@ class CharacterCreator(ShowBase):
         else:
             self.last_mouse = [0, 0]
         return task.cont
+
+
+    def make_sliders(self, node):
+        for j, joint in enumerate(node.getJoints()):
+            if type(joint) == CharacterSlider:
+                self.set_shapekey(node, joint.name, 0)
+                self.sliders[joint.name] = DirectSlider(
+                    range=(0,1), value=0, pageSize=0.2, 
+                    command=self.set_shapekey_slider, extraArgs=[node, joint.name]
+                )
+                self.y_pos -= 0.05
+                slider = self.sliders[joint.name]
+                slider.set_scale(0.25)
+                slider.set_x(-1.5)
+                slider.set_z(self.y_pos)
+                slider_label = OnscreenText(
+                    joint.name, pos=(-1.25, self.y_pos, 0), scale=0.04,
+                    fg=(1,1,1,1), align=TextNode.ALeft)
+
 
 
 app = CharacterCreator()
