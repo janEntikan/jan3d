@@ -65,7 +65,7 @@ class CharacterCreator(ShowBase):
         self.jan.attach("clothing", "body", "root")
         self.jan.hide_part("palisa")
         self.jan.reparent_to(render)
-        #self.jan.set_transparency(True)
+        self.jan.set_transparency(True)
         self.make_sliders(self.jan)
 
         # talk
