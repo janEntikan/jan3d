@@ -21,54 +21,62 @@ class CharacterCreator(ShowBase):
         base.win.set_clear_color((0,0,0,0))
         simplepbr.init()
 
+        #load textures
+        self.textures = {}
+        texture_files = "plaid", "shirtnjeans", "jacket"
+        for file in texture_files:
+            self.textures[file] = loader.loadTexture("textures/{}.png".format(file))
+
+        # camera/control
         self.cam_pivot = NodePath("cam pivot")
         self.cam_pivot.reparentTo(render)
         base.cam.reparent_to(self.cam_pivot)
         base.cam.set_pos(0,-2.7,1.8)
         self.cam_pivot.set_h(180)
         self.cam_pivot.set_y(0.2)
-
-        self.jan = Actor("jan.bam")
-        self.jan_char = self.jan.find('**/+Character').node()  
-        self.jan.loop("idle")
-        self.jan.reparent_to(render)
-
-        self.palisa = Actor("acc/palisa-mije.bam")
-        self.palisa.reparent_to(self.jan)
-
-        self.sliders = {}
-        self.y_pos = 0.9
-        self.make_sliders(self.jan)
-        self.make_sliders(self.palisa)
-
-        sun = DirectionalLight("sun")
-        sun.set_color((1,0.8,0.8,1))
-        sun_np = render.attachNewNode(sun)
-        render.set_light(sun_np)
-        sun_np.set_h(185)
-        sun_np.set_p(-50)
-
-        moon = DirectionalLight("moon")
-        moon.set_color((0.8,0.8,1,1))
-        moon_np = render.attachNewNode(moon)
-        render.set_light(moon_np)
-        moon_np.set_p(-50)
-
         self.move_speed = 0.5
         self.zoom_speed = 0.5
         self.last_mouse = [0, 0]
-
         self.accept("wheel_up", self.zoom_in)
         self.accept("wheel_down", self.zoom_out)
-        self.taskMgr.add(self.update)
+        self.taskMgr.add(self.update_camera)
 
-        self.speech = Speech(loader.loadSfx("toki-mije-a.wav"))
-        #self.speech = Speech(loader.loadSfx("toki-meli-a.wav"))
+        # sliders
+        self.sliders = {}
+        self.y_pos = 0.9
+
+        # jan model
+        self.jan = Actor(
+            {
+                "body":"character/jan.bam",
+                "palisa": "character/acc/palisa-mije.bam",
+                "hair":"character/acc/hair_raz.bam",
+                "clothing": "character/acc/clothing.bam",
+            },
+            {
+                "body":{},
+                "palisa":{},
+                "hair":{},
+                "clothing":{},
+            }
+        )
+        self.jan.attach("hair", "body", "head")
+        self.jan.attach("palisa", "body", "waist")
+        self.jan.attach("clothing", "body", "root")
+        self.jan.hide_part("palisa")
+        self.jan.reparent_to(render)
+        #self.jan.set_transparency(True)
+        self.make_sliders(self.jan)
+
+        # talk
+        gender = "mije" #meli
+        self.speech = Speech(loader.loadSfx("toki-{}-a.wav".format(gender)))
         self.speech.say("to ki")
         self.speech.say("mi to ki po na")
         self.speech.say("mi o li n si na")
         self.taskMgr.add(self.speech.update)
 
+        self.light_scene()
         render.ls()
         render.analyze()
 
@@ -76,9 +84,10 @@ class CharacterCreator(ShowBase):
         self.set_shapekey(node, shapekey, self.sliders[shapekey]['value'])
 
     def set_shapekey(self, node, shapekey, value):
-        char = node.find('**/+Character').node()
-        char.get_bundle(0).freeze_joint(shapekey, value)
-
+        chars = node.find_all_matches('**/+Character')
+        for char in chars:
+            char.node().get_bundle(0).freeze_joint(shapekey, value)
+        
     def zoom_out(self):
         new_zoom = base.cam.get_y()-self.zoom_speed
         base.cam.set_y(new_zoom)
@@ -89,7 +98,7 @@ class CharacterCreator(ShowBase):
             new_zoom = -1.2
         base.cam.set_y(new_zoom)
 
-    def update(self, task):
+    def update_camera(self, task):
         if base.mouseWatcherNode.is_button_down(MouseButton.three()):
             new_x = base.mouseWatcherNode.getMouseX()
             new_y = base.mouseWatcherNode.getMouseY()
@@ -103,25 +112,37 @@ class CharacterCreator(ShowBase):
             self.last_mouse = [0, 0]
         return task.cont
 
-
     def make_sliders(self, node):
         for j, joint in enumerate(node.getJoints()):
             if type(joint) == CharacterSlider:
-                self.set_shapekey(node, joint.name, 0)
-                self.sliders[joint.name] = DirectSlider(
-                    range=(0,1), value=0, pageSize=0.2, 
-                    command=self.set_shapekey_slider, extraArgs=[node, joint.name]
-                )
-                self.y_pos -= 0.05
-                slider = self.sliders[joint.name]
-                slider.set_scale(0.25)
-                slider.set_x(-1.5)
-                slider.set_z(self.y_pos)
-                slider_label = OnscreenText(
-                    joint.name, pos=(-1.25, self.y_pos, 0), scale=0.04,
-                    fg=(1,1,1,1), align=TextNode.ALeft)
+                if not joint.name in self.sliders:
+                    self.set_shapekey(node, joint.name, 0)
+                    self.sliders[joint.name] = DirectSlider(
+                        range=(0,1), value=0, pageSize=0.2, 
+                        command=self.set_shapekey_slider, extraArgs=[node, joint.name]
+                    )
+                    self.y_pos -= 0.05
+                    slider = self.sliders[joint.name]
+                    slider.set_scale(0.25)
+                    slider.set_x(-1.5)
+                    slider.set_z(self.y_pos)
+                    slider_label = OnscreenText(
+                        joint.name, pos=(-1.25, self.y_pos, 0), scale=0.04,
+                        fg=(1,1,1,1), align=TextNode.ALeft)
 
+    def light_scene(self):
+        sun = DirectionalLight("sun")
+        sun.set_color((1,0.8,0.8,1))
+        sun_np = render.attachNewNode(sun)
+        render.set_light(sun_np)
+        sun_np.set_h(185)
+        sun_np.set_p(-50)
 
+        moon = DirectionalLight("moon")
+        moon.set_color((0.8,0.8,1,1))
+        moon_np = render.attachNewNode(moon)
+        render.set_light(moon_np)
+        moon_np.set_p(-50)
 
 app = CharacterCreator()
 app.run()

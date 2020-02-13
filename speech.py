@@ -26,11 +26,16 @@ class Speech:
         self.time = 0
         self.time_in_sample = 0
         words = input.split();
-        for word in words:
+        pitch = 1.4
+
+        for w, word in enumerate(words):
             syllables = [word] # TODO: split the word in syllables
-            for syllable in syllables:
-                length = uniform(0.3, 0.4)
-                pitch = uniform(0.9, 1.6)
+            for s, syllable in enumerate(syllables):
+                if w == len(words) -1:
+                    length = 0.4
+                else:
+                    length = uniform(0.2, 0.35)
+                pitch -= 0.05
                 self.talking.append((syllable, length, pitch))
         self.talking.append(("", 1, 1)) # add a pause after word
         self.play()
