@@ -51,18 +51,26 @@ class CharacterCreator(ShowBase):
                 "body":"character/jan.bam",
                 "palisa": "character/acc/palisa-mije.bam",
                 "hair":"character/acc/hair_raz.bam",
-                "clothing": "character/acc/clothing.bam",
+                "clothing tight": "character/clothing/clothing_tight.bam",
+                "clothing loose": "character/clothing/clothing_loose.bam",
+                "clothing skirt": "character/clothing/clothing_skirt.bam",
             },
             {
                 "body":{},
                 "palisa":{},
                 "hair":{},
-                "clothing":{},
+                "clothing tight":{},
+                "clothing loose":{},
+                "clothing skirt":{},
             }
         )
         self.jan.attach("hair", "body", "head")
         self.jan.attach("palisa", "body", "waist")
-        self.jan.attach("clothing", "body", "root")
+        self.jan.attach("clothing tight", "body", "root")
+        self.jan.attach("clothing loose", "body", "root")
+        self.jan.attach("clothing skirt", "body", "root")
+
+        self.jan.setTwoSided(True)
         self.jan.hide_part("palisa")
         self.jan.reparent_to(render)
         self.jan.set_transparency(True)
