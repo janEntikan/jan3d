@@ -48,33 +48,29 @@ class CharacterCreator(ShowBase):
         # jan model
         self.jan = Actor(
             {
-                "body":"character/jan.bam",
-                "palisa": "character/acc/palisa-mije.bam",
-                "hair":"character/acc/hair_raz.bam",
-                "clothing tight": "character/clothing/clothing_tight.bam",
-                "clothing loose": "character/clothing/clothing_loose.bam",
-                "clothing skirt": "character/clothing/clothing_skirt.bam",
+                "body": "jan/jan.bam",
+                "palisa": "jan/acc/palisa-mije.bam",
+                "hair": "jan/acc/hair_raz.bam",
+                "clothing": "jan/clothing.bam",
             },
             {
                 "body":{},
                 "palisa":{},
                 "hair":{},
-                "clothing tight":{},
-                "clothing loose":{},
-                "clothing skirt":{},
+                "clothing":{},
             }
         )
         self.jan.attach("hair", "body", "head")
         self.jan.attach("palisa", "body", "waist")
-        self.jan.attach("clothing tight", "body", "root")
-        self.jan.attach("clothing loose", "body", "root")
-        self.jan.attach("clothing skirt", "body", "root")
-
+        self.jan.attach("clothing", "body", "root")
+        self.jan.play("loop")
         self.jan.setTwoSided(True)
         self.jan.hide_part("palisa")
+        self.make_sliders(self.jan)
+        #self.jan.flatten_strong()
+        #self.jan.post_flatten()
         self.jan.reparent_to(render)
         self.jan.set_transparency(True)
-        self.make_sliders(self.jan)
 
         # talk
         gender = "mije" #meli
@@ -131,6 +127,7 @@ class CharacterCreator(ShowBase):
                     )
                     self.y_pos -= 0.05
                     slider = self.sliders[joint.name]
+                    # slider["value"] = 0.5
                     slider.set_scale(0.25)
                     slider.set_x(-1.5)
                     slider.set_z(self.y_pos)
