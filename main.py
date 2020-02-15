@@ -6,6 +6,7 @@ from direct.gui.DirectGui import *
 from direct.gui.OnscreenText import OnscreenText
 
 from panda3d.core import WindowProperties
+from panda3d.core import MultitexReducer
 from panda3d.core import NodePath
 from panda3d.core import TextureStage
 from panda3d.core import CharacterSlider
@@ -20,6 +21,7 @@ class CharacterCreator(ShowBase):
         ShowBase.__init__(self) 
         base.win.set_clear_color((0,0,0,0))
         simplepbr.init()
+        self.multitex_reducer = MultitexReducer()
 
         #load textures
         self.textures = {}
@@ -69,6 +71,9 @@ class CharacterCreator(ShowBase):
         self.make_sliders(self.jan)
         #self.jan.flatten_strong()
         #self.jan.post_flatten()
+        #self.multitex_reducer.scan(self.jan)
+        #self.multitex_reducer.flatten(base.win)
+
         self.jan.reparent_to(render)
         self.jan.set_transparency(True)
 
