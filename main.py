@@ -14,7 +14,6 @@ from panda3d.core import DirectionalLight, AmbientLight, PointLight
 from panda3d.core import MouseButton
 from panda3d.core import TextNode
 
-from speech import Speech
 
 class CharacterCreator(ShowBase):
     def __init__(self):
@@ -25,9 +24,6 @@ class CharacterCreator(ShowBase):
 
         #load textures
         self.textures = {}
-        texture_files = "plaid", "shirtnjeans", "jacket"
-        for file in texture_files:
-            self.textures[file] = loader.loadTexture("textures/{}.png".format(file))
 
         # camera/control
         self.cam_pivot = NodePath("cam pivot")
@@ -36,6 +32,8 @@ class CharacterCreator(ShowBase):
         base.cam.set_pos(0,-2.7,1.8)
         self.cam_pivot.set_h(180)
         self.cam_pivot.set_y(0.2)
+        base.camLens.set_near(0.5)
+        base.camLens.set_far(64)
         self.move_speed = 0.5
         self.zoom_speed = 0.5
         self.last_mouse = [0, 0]
@@ -51,23 +49,12 @@ class CharacterCreator(ShowBase):
         self.jan = Actor(
             {
                 "body": "jan/jan.bam",
-                "palisa": "jan/acc/palisa-mije.bam",
-                "hair": "jan/acc/hair_raz.bam",
-                "clothing": "jan/clothing.bam",
             },
             {
                 "body":{},
-                "palisa":{},
-                "hair":{},
-                "clothing":{},
             }
         )
-        self.jan.attach("hair", "body", "head")
-        self.jan.attach("palisa", "body", "waist")
-        self.jan.attach("clothing", "body", "root")
         self.jan.play("loop")
-        self.jan.setTwoSided(True)
-        self.jan.hide_part("palisa")
         self.make_sliders(self.jan)
         #self.jan.flatten_strong()
         #self.jan.post_flatten()
@@ -76,15 +63,6 @@ class CharacterCreator(ShowBase):
 
         self.jan.reparent_to(render)
         self.jan.set_transparency(True)
-
-        # talk
-        gender = "mije" #meli
-        self.speech = Speech(loader.loadSfx("toki-{}-a.wav".format(gender)))
-        self.speech.say("to ki")
-        self.speech.say("mi to ki po na")
-        self.speech.say("mi o li n si na")
-        self.taskMgr.add(self.speech.update)
-
         self.light_scene()
         render.ls()
         render.analyze()
@@ -146,13 +124,13 @@ class CharacterCreator(ShowBase):
         sun_np = render.attachNewNode(sun)
         render.set_light(sun_np)
         sun_np.set_h(185)
-        sun_np.set_p(-50)
+        sun_np.set_p(50)
 
         moon = DirectionalLight("moon")
         moon.set_color((0.8,0.8,1,1))
-        moon_np = render.attachNewNode(moon)
+        moon_np = sun_np.attachNewNode(moon)
         render.set_light(moon_np)
-        moon_np.set_p(-50)
+        moon_np.set_h(180)
 
 app = CharacterCreator()
 app.run()
